@@ -8,25 +8,24 @@ services:
     image: geth-non-authority
     build:
       context: .
-    command:
-      --datadir root/.ethereum/dchain
+    command: --datadir root/.ethereum/dchain
       --bootnodes ${BOOTNODE_ENODE}
       --syncmode "full"
       --gcmode archive
       --networkid=${NETWORK_ID}
       --discovery.port 30305
       --port 30305
-      --allow-insecure-unlock
       --http
       --http.addr="0.0.0.0"
-      --http.api="eth,web3,net,miner,admin,personal"
+      --http.api="eth,web3,net,clique"
       --http.vhosts "0.0.0.0"
       --http.port 8545
       --http.corsdomain="*"
       --ethstats ${ETH_STATS}
+      --maxpeers 100
+      --cache 1024
     ports:
       - "8545:8545"
-      - "30303:30303"
       - "30305:30305"
     volumes:
       - ${PATH_DCHAIN}:/root/.ethereum/dchain

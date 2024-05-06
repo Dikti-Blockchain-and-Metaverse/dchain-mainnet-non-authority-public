@@ -1,11 +1,24 @@
 version: "3.7"
 
 services:
+  init-genesis:
+    hostname: init-genesis
+    env_file:
+      - .env
+    image: ethereum/client-go:alltools-v1.13.10
+    command: geth init --datadir root/.ethereum/dchain genesis/genesis.json
+    volumes:
+      - ${PATH_DCHAIN}/genesis:/genesis
+      - ${PATH_DCHAIN}/dchain:/root/.ethereum/dchain
+
   geth-non-authority:
     hostname: geth-non-authority
     env_file:
       - .env
     image: geth-non-authority
+    depends_on:
+      init-genesis:
+        condition: service_completed_successfully
     build:
       context: .
     command: --datadir root/.ethereum/dchain
@@ -28,7 +41,7 @@ services:
       - "8545:8545"
       - "30305:30305"
     volumes:
-      - ${PATH_DCHAIN}:/root/.ethereum/dchain
+      - ${PATH_DCHAIN}/dchain:/root/.ethereum/dchain
     networks:
       priv-eth-net:
 
